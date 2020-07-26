@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '0kjuwe!u=l^=pj92(d7@m8&v0s9=td6y%f=a^#w@n*f69$n*i0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['https://crudapp01.herokuapp.com/', 'localhost']
 
