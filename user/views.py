@@ -10,12 +10,12 @@ from rest_framework.decorators import api_view, permission_classes
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.core.exceptions import ObjectDoesNotExist
 from user.serializer import UserSerializer
 
 
 
 # Create your views here.
-
 @csrf_exempt
 def register(request):
 	if request.method == "POST":
@@ -28,16 +28,27 @@ def register(request):
 		email = data['email']
 
 		user_data = {}
-
+		status = 0
 		try:
+			print("trying ------------")
+			user = User.objects.get(username = username)
+			user_data['response'] = 'Username already exists'
+			status = 400
+		except ObjectDoesNotExist :
+			print("first exception ------------")
 			user = User.objects.create_user(username = username, password = password, first_name = first_name, last_name = last_name, email = email )
 			user.save()
+			token = Token.objects.get(user = user).key
 			user_data['username'] = username
+			user_data['token'] = token
 			user_data['response'] = 'registration successfull'
-			return JsonResponse(user_data, status = 201)
+			status = 200
+			# return JsonResponse(user_data, status = 201)
 		except:
+			print("Second exception ------------")
 			user_data['response'] = 'registration failed'
-			return JsonResponse(user_data, status = 400)
+			status = 400
+		return JsonResponse(user_data, status = status)
 
 
 @csrf_exempt
