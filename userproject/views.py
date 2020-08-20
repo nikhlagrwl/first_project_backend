@@ -3,7 +3,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework.parsers import JSONParser
 
-from userproject.models import projectInfo
+from .models import projectInfo
+from .serializer import projectInfoSerializer
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -18,16 +19,18 @@ def createProject(request):
 		token = request.META["HTTP_AUTHORIZATION"].split(" ")[1]
 		username = Token.objects.get(key = token).user.username
 		data = JSONParser().parse(request)
-		print(data)
-		title = data["title"]
-		description = data["description"]
-
-		project = projectInfo.objects.create(project_title = title, project_description = description, project_owner = username)
-		project.save()
+		data["project_owner"] = username
 
 		response = {}
-		response["response"] = "project creation success"
+		status = 200
+		serializer = projectInfoSerializer(data = data)
 
-		print("project created")
+		if serializer.is_valid():
+			serializer.save()
+			response["response"] = "project creation success"
 
-		return JsonResponse(response, status = 200)
+		else:
+			response["response"] = "unseccessful"
+			status = 400
+
+		return JsonResponse(response, status = status)
