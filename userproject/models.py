@@ -20,4 +20,4 @@ class projectSkills(models.Model):
 # Table for relation between projects and user applied to that project
 class userProjectInfo(models.Model):
 	user_id = models.CharField(max_length = 50, db_column = "User Id")
-	user_status = models.CharField(max_length = 20, choices = STATUS_CHOICES)
+	user_status = models.CharField(max_length = 20, choices = STATUS_CHOICES, default = 'Applied')

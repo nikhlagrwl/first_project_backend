@@ -11,7 +11,7 @@ admin.site.register(projectInfo, projectInfoAdmin)
 
 #admin panel for projectSkills table
 class projectSkillsAdmin(admin.ModelAdmin):
-	list_display = ['project_id', 'skill_id']
+	list_display = ['id', 'project_id', 'skill_id']
 
 admin.site.register(projectSkills, projectSkillsAdmin)
 
