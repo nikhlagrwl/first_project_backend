@@ -7,17 +7,17 @@ from rest_framework.authtoken.models import Token
 
 # Create your models here.
 
-# class User_data(models.Model):
-# 	first_name = models.CharField(max_length = 100)
-# 	last_name = models.CharField(max_length = 100)
-# 	email = models.EmailField(unique = True)
-# 	contact_no = models.CharField(max_length = 100)
-class UserInfo(models.Model):
-	username = models.CharField(max_length = 100, primary_key = True)
-	contact_no = models.CharField(max_length = 10)
-	gender = models.CharField(max_length = 10)
-	age = models.CharField(max_length = 2)
+# Table for user's additional details
+class userInfo(models.Model):
+	username = models.CharField(max_length = 150, primary_key = True, db_column = 'Username')
+	contact_no = models.CharField(max_length = 10, db_column = 'Contact No.')
+	gender = models.CharField(max_length = 10, db_column = 'Gender')
+	college_id = models.IntegerField(db_column = 'College Id', default = None)
+	city = models.CharField(max_length = 50, db_column = 'City', default = None)
 
+class userSkills(models.Model):
+	username = models.CharField(max_length = 150, db_column = "Username")
+	skill = models.IntegerField(db_column = "Skill Name")
 
 @receiver(post_save, sender = settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance = None, created = False, **kwargs):
