@@ -9,13 +9,13 @@ from rest_framework.authtoken.models import Token
 
 # Table for user's additional details
 class userInfo(models.Model):
-	username = models.OneToOneField(User, primary_key = True, db_column = 'User', on_delete = models.CASCADE)
+	username = models.OneToOneField(User, primary_key = True, db_column = 'username', on_delete = models.CASCADE)
 	country = models.CharField(max_length = 100, db_column = "Country")
 	state = models.CharField(max_length = 100, db_column = "State")
 	contact_no = models.CharField(max_length = 10, db_column = 'Contact No.')
 	gender = models.CharField(max_length = 10, db_column = 'Gender')
 	college_name = models.CharField(max_length = 150, db_column = "College Name")
-	college_id = models.IntegerField(db_column = 'College Id', null = True)
+	# college_id = models.IntegerField(db_column = 'College Id', null = True)
 	city = models.CharField(max_length = 50, db_column = 'City')
 
 class userSkills(models.Model):

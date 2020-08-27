@@ -106,33 +106,24 @@ def userLogout(request):
 def saveUserInfo(request):
 	if request.method == "POST":
 		data = JSONParser().parse(request)
-		token = request.META["HTTP_AUTHORIZATION"].split(" ")[1]
-		user = Token.objects.get(key = token).user
-		data["username"] = user
-		# serializer = userInfo.objects.create(
-		# 	username = data["username"],
-		# 	country = data["country"],
-		# 	state = data["state"],
-		# 	contact_no = data["contact_no"],
-		# 	gender = data["gender"],
-		# 	college_name = data["college_name"],
-		# 	college_id = data["college_id"],
-		# 	city = data["city"]
-
-		# )
-
-		serializer = userInfoSerializer(data = data)
-
-		print("\n\n ----------------------\n\n")
-		print(data)
-		print("\n\n ----------------------\n\n")
-		print(serializer)
-		print("\n\n ----------------------\n\n")
 
 		response = {}
 		status = 400
-		if serializer.is_valid():
-			serializer.save()
+
+		token = request.META["HTTP_AUTHORIZATION"].split(" ")[1]
+		user = Token.objects.get(key = token).user
+
+		user_data = userInfo.objects.get(username = user)
+
+		if user_data is not None:
+			user_data.country = data["country"]
+			user_data.state = data["state"]
+			user_data.city = data["city"]
+			user_data.college_name = data["college_name"]
+			user_data.contact_no = data["contact_no"]
+			user_data.gender = data["gender"]
+		
+			user_data.save();
 			response["response"] = "success"
 			status = 201
 		else:
@@ -152,6 +143,9 @@ def fetchUserDetails(request):
 	user_info = model_to_dict(info)
 
 	del user_info['username']
+	user_info['email'] = user.username
+	user_info['first_name'] = user.first_name
+	user_info['last_name'] = user.last_name
 
 	return JsonResponse(user_info, status = 201, safe = False)
 
