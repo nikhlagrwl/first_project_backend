@@ -8,10 +8,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core.exceptions import ObjectDoesNotExist
-from user.serializer import UserSerializer
+from django.forms.models import model_to_dict 
+
+from .serializer import userInfoSerializer
+from .models import userInfo
 
 
 
@@ -38,6 +41,10 @@ def register(request):
 			print("first exception ------------")
 			user = User.objects.create_user(username = username, password = password, first_name = first_name, last_name = last_name, email = email )
 			user.save()
+
+			user_info = userInfo.objects.create(username = user)
+			user_info.save()
+
 			token = Token.objects.get(user = user).key
 			user_data['username'] = username
 			user_data['token'] = token
@@ -52,7 +59,7 @@ def register(request):
 
 
 @csrf_exempt
-def check_user_name(request):
+def checkUserName(request):
 	if request.method == "POST":
 		data = JSONParser().parse(request)
 		username = data['username']
@@ -61,15 +68,15 @@ def check_user_name(request):
 		try:
 			user = User.objects.get(username = username)
 			user_data['response'] = 'username not available'
-			return HttpResponse(user_data, status = 400)
+			return JsonResponse(user_data, status = 400)
 		except:
 			user_data['response'] = 'username available'
-			return HttpResponse(user_data, status = 201)
+			return JsonResponse(user_data, status = 201)
 
 
 @api_view(['GET', ])
 @permission_classes((IsAuthenticated, ))
-def is_login(request):
+def isLogin(request):
 	if request.method == "GET":
 		print("user is authenticated")
 		token = JSONParser().parse(request)['token']
@@ -84,13 +91,73 @@ def is_login(request):
 			return JsonResponse(data, status = 200)
 		else:
 			data['response'] = 'authentication unsuccessfull'
-			return HttpResponse(data, status = 400)
+			return JsonResponse(data, status = 400)
 
-def user_logout(request):
+def userLogout(request):
 	if request.method == "GET":
 		logout(request)
 		data = {}
 		data['response'] = 'logout success'
 		return JsonResponse(data, status = 201)
+
+
+@csrf_exempt
+@permission_classes([IsAuthenticated, ])
+def saveUserInfo(request):
+	if request.method == "POST":
+		data = JSONParser().parse(request)
+		token = request.META["HTTP_AUTHORIZATION"].split(" ")[1]
+		user = Token.objects.get(key = token).user
+		data["username"] = user
+		# serializer = userInfo.objects.create(
+		# 	username = data["username"],
+		# 	country = data["country"],
+		# 	state = data["state"],
+		# 	contact_no = data["contact_no"],
+		# 	gender = data["gender"],
+		# 	college_name = data["college_name"],
+		# 	college_id = data["college_id"],
+		# 	city = data["city"]
+
+		# )
+
+		serializer = userInfoSerializer(data = data)
+
+		print("\n\n ----------------------\n\n")
+		print(data)
+		print("\n\n ----------------------\n\n")
+		print(serializer)
+		print("\n\n ----------------------\n\n")
+
+		response = {}
+		status = 400
+		if serializer.is_valid():
+			serializer.save()
+			response["response"] = "success"
+			status = 201
+		else:
+			response["response"] = "error"
+
+		return JsonResponse(response, status = status)
+
+
+@api_view(['GET', ])
+@permission_classes((IsAuthenticated, ))
+def fetchUserDetails(request):
+	token = request.META["HTTP_AUTHORIZATION"].split(" ")[1]
+	user = Token.objects.get(key = token).user
+
+	info = userInfo.objects.get(username = user)
+
+	user_info = model_to_dict(info)
+
+	del user_info['username']
+
+	return JsonResponse(user_info, status = 201, safe = False)
+
+
+
+
+
 
 
