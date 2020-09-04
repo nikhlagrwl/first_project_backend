@@ -4,6 +4,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.parsers import JSONParser
 
 from .serializer import projectInfoSerializer, projectSkillsSerializer
+from .models import projectInfo, projectSkills
+
+from adminpanel.models import skillsList
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -15,39 +18,48 @@ from django.http import JsonResponse
 def createProject(request):
 	if request.method == "POST":
 		token = request.META["HTTP_AUTHORIZATION"].split(" ")[1]
-		username = Token.objects.get(key = token).user.username
+		user = Token.objects.get(key = token).user
 		data = JSONParser().parse(request)
 
 		details = data["details"] #details of project except the skill list
 		skill_ids = data["skills"] #the skill list for the particular project
 
-		details["project_owner"] = username
+		details["project_owner"] = user
 		skill_data = []
+
+		print(details)
 
 		response = {}
 		status = 200
-		project_serializer = projectInfoSerializer(data = details) #saving the project details
+		project = projectInfo.objects.create(
+			project_title = details["project_title"],
+			project_description = details["project_description"],
+			project_owner = user
+		) #saving the project details
 
-		if project_serializer.is_valid():
-			project_serializer.save()
-			project_id = project_serializer.data["project_id"]
+		if project is not None:
+			project.save()
+			project_id = project.project_id
 
 			#only if the project is saved in Db save the skills related to this project
 			if project_id is not None:
 				for ids in skill_ids:
-					temp = {}
-					temp["project_id"] = project_id
-					temp["skill_id"] = ids
-					skill_data.append(temp)
+					# temp["project_id"] = project
+					skill = skillsList.objects.get(skill_id = ids)
 
-				skill_serializer = projectSkillsSerializer(data = skill_data, many = True) #saving the skills of the project
+					project_skill = projectSkills.objects.create(project_id = project, skill_id = skill)
+					# skill_data.append(temp)
 
-				if skill_serializer.is_valid():
-					skill_serializer.save()
-					response["response"] = "project creation success"
-				else:
-					status = 400
-					response["response"] = "Error in saving skills of project"
+				# print(skill_data)
+
+				# skill_serializer = projectSkillsSerializer(data = skill_data, many = True) #saving the skills of the project
+
+				# if skill_serializer.is_valid():
+					# skill_serializer.save()
+				response["response"] = "project creation success"
+				# else:
+				# 	status = 400
+				# 	response["response"] = "Error in saving skills of project"
 			else:
 				status = 400
 				response["response"] = "Error in saving the project"

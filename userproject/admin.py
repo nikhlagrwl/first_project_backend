@@ -5,7 +5,7 @@ from userproject.models import projectInfo, projectSkills, userProjectInfo
 
 #admin panel for projectInfo Table
 class projectInfoAdmin(admin.ModelAdmin):
-	list_display = ['project_id', 'project_title', 'project_description', 'created_at', 'project_owner']
+	list_display = ['project_id', 'project_title', 'project_description', 'created_at', 'project_owner', 'start_date', 'end_date', 'required_contributors']
 
 admin.site.register(projectInfo, projectInfoAdmin)
 
@@ -18,6 +18,6 @@ admin.site.register(projectSkills, projectSkillsAdmin)
 
 #admin panel for userProjectInfo Table
 class userProjectInfoAdmin(admin.ModelAdmin):
-	list_display = ['user_id', 'user_status']
+	list_display = ['username', 'project_id', 'user_status']
 
 admin.site.register(userProjectInfo, userProjectInfoAdmin)
