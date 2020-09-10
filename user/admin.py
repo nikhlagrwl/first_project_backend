@@ -6,7 +6,7 @@ from user.models import userInfo, userSkills
 
 #admin panel for user info table
 class UserInfoAdmin(admin.ModelAdmin):
-	list_display = ['username', 'contact_no', 'gender', 'college_id', 'city']
+	list_display = ['username', 'contact_no', 'gender', 'country', 'state', 'city', 'college_name']
 
 admin.site.register(userInfo, UserInfoAdmin)
 
