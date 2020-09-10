@@ -5,7 +5,7 @@ from adminpanel.models import skillsList
 
 # Create your tests here.
 
-class registrationTestCase(TestCase):
+class registrationTest(TestCase):
 	def setUp(self):
 		user = User.objects.create_user(username = "abc@email.com", password = "password@123", first_name = "first_name", last_name = "last_name", email = "abc@email.com")
 		userInfo.objects.create(username = user, country = "India", state = "West Bengal", contact_no = "1234567899", college_name = "IIT Kharagpur", city = "Kolkata")

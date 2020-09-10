@@ -11,13 +11,13 @@ admin.site.register(projectInfo, projectInfoAdmin)
 
 #admin panel for projectSkills table
 class projectSkillsAdmin(admin.ModelAdmin):
-	list_display = ['id', 'project_id', 'skill_id']
+	list_display = ['id', 'project_id', 'skill_id', 'status']
 
 admin.site.register(projectSkills, projectSkillsAdmin)
 
 
 #admin panel for userProjectInfo Table
 class userProjectInfoAdmin(admin.ModelAdmin):
-	list_display = ['username', 'project_id', 'user_status']
+	list_display = ['id', 'user', 'project', 'user_status']
 
 admin.site.register(userProjectInfo, userProjectInfoAdmin)
