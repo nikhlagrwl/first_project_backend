@@ -16,8 +16,6 @@ from django.forms.models import model_to_dict
 from .serializer import userInfoSerializer
 from .models import userInfo
 
-
-
 # Create your views here.
 @csrf_exempt
 def register(request):
