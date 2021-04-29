@@ -143,6 +143,3 @@ def applyOnProject(request):
 		response["response"] = "Failed"
 
 	return JsonResponse(response, status = status)
-
-
-
